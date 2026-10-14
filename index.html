@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="si">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131a">
+<title>Maduwa Store — Gaming Store Assistant</title>
+<style>
+:root{--bg:#0b0e13;--panel:#121720;--panel2:#1a2230;--line:#293344;--text:#f3f6fb;--muted:#a6b0c0;--mint:#78f5c5;--mint2:#36dba4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#172334 0,#0b0e13 55%);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:18px}
+.app{width:100%;max-width:780px;height:min(900px,calc(100vh - 36px));min-height:590px;display:flex;flex-direction:column;background:rgba(18,23,32,.96);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 24px 80px #0008}
+header{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid var(--line);background:#121720}
+.logo{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#223044;font-size:25px}
+.brand{flex:1}.brand h1{font-size:19px;margin:0}.brand p{margin:2px 0 0;color:var(--mint);font-size:12px}.online{font-size:11px;color:var(--mint);border:1px solid #286a56;border-radius:30px;padding:5px 9px}
+.intro{padding:16px 20px 8px;color:var(--muted);font-size:13px}
+.services{padding:0 16px 10px}.services-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:#1a2230;border:1px solid #293344;color:#f3f6fb;padding:10px 13px;border-radius:12px;cursor:pointer;font:inherit}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:8px 0 0}.quick[hidden]{display:none}
+.quick button{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:11px 7px;border-radius:13px;cursor:pointer;font:inherit;font-size:12px;transition:.15s}
+.quick button:hover{border-color:var(--mint);transform:translateY(-1px)}.quick span{display:block;font-size:21px;margin-bottom:4px}
+.chat{padding:18px;flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);scroll-behavior:smooth}
+.msg{max-width:88%;padding:12px 14px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:#202938;border:1px solid #2a374a;border-bottom-left-radius:5px}
+.user{align-self:flex-end;background:#145440;border:1px solid #21775a;border-bottom-right-radius:5px}
+.msg small{display:block;color:#aab5c5;font-size:10px;margin-top:8px}
+.msg strong{color:var(--mint)}.price-title{font-weight:750;color:var(--mint);margin-bottom:7px}
+.contact{color:var(--mint);text-decoration:none;font-weight:700}
+.composer{padding:13px;display:flex;gap:9px;border-top:1px solid var(--line);background:#10151d}
+input{min-width:0;flex:1;border-radius:14px;border:1px solid #344154;background:#0c1118;color:var(--text);padding:13px 14px;font:inherit;outline:none}
+input:focus{border-color:var(--mint)}.send{border:0;border-radius:14px;background:var(--mint);color:#082116;padding:0 19px;font-weight:800;cursor:pointer}
+footer{text-align:center;padding:0 12px 12px;background:#10151d;color:#79869a;font-size:10px}
+a{color:var(--mint)}@media(max-width:520px){body{padding:0}.app{height:100dvh;min-height:0;border-radius:0;border:0}.quick{grid-template-columns:repeat(2,1fr)}.quick button{padding:9px}.msg{max-width:95%}.intro{padding-top:12px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="logo">🎮</div><div class="brand"><h1>Maduwa Store</h1><p>● Gaming Store Assistant</p></div><div class="online">ONLINE</div></header>
+<div class="intro">මචං! 👋 Maduwa Store එකට සාදරයෙන් පිළිගන්නවා. Price list, game accounts සහ orders ගැන අහන්න.</div>
+<div class="services">
+<button class="services-toggle" id="servicesToggle" aria-expanded="false">🎮 Services / Price Lists <span id="servicesArrow">＋</span></button>
+<div class="quick" id="quickActions" hidden>
+<button data-q="top up price"><span>💎</span>Top-up Prices</button>
+<button data-q="blood strike price"><span>🎯</span>Blood Strike</button>
+<button data-q="guild glory bots price"><span>🤖</span>Guild Glory Bots</button>
+<button data-q="account sell"><span>🛒</span>Account Sell</button>
+<button data-q="whatsapp contact"><span>📲</span>WhatsApp Order</button>
+</div>
+</div>
+<section class="chat" id="chat" aria-live="polite"></section>
+<form class="composer" id="form"><input id="input" autocomplete="off" placeholder="මචං, මොන price list එකද ඕනේ?..." aria-label="Message"/><button class="send" type="submit">Send ➤</button></form>
+<footer>Gaming AI · AI assistant · Store prices supplied by owner · Confirm availability before payment</footer>
+</main>
+<script>
+const phone='94719270005';
+const topup=`💎 TOP UP — PRICE IN LKR 🇱🇰
+
+✅ Weekly Lite — Rs. 130
+✅ Weekly — Rs. 580
+✅ Monthly — Rs. 2,850
+✅ Little Pack — Rs. 1,600
+✅ VIP Pack — Rs. 3,450
+✅ VIP Special — Rs. 3,560
+✅ Big Pack — Rs. 5,200
+✅ Super VIP — Rs. 5,160
+✅ Diamond Packs — Rs. 8,600 / 14,300 / 23,000 / 28,800
+
+මචං, order එකක් දාන්න WhatsApp එකෙන් message එකක් දාන්න.`;
+const blood=`🎯 BLOOD STRIKE — NEW PRICE LIST
+
+📍 Strike Pass Elite — Rs. 1,300
+📍 Strike Pass Premium — Rs. 1,450
+
+💛 100 + 5 Golds — Rs. 300
+💛 300 + 20 Golds — Rs. 950
+💛 1,000 + 100 Golds — Rs. 3,000
+💛 2,000 + 260 Golds — Rs. 5,500
+💛 5,000 + 800 Golds — Rs. 12,000
+
+📲 Order / inquiry: WhatsApp 0719270005`;
+const bots=`🤖 GUILD GLORY BOTS — PRICE LIST 🇱🇰
+
+📦 4 Bots — Rs. 1,200
+📦 8 Bots — Rs. 2,000
+📦 12 Bots — Rs. 3,150
+📦 16 Bots — Rs. 4,200
+📦 20 Bots — Rs. 5,450
+📦 24 Bots — Rs. 6,800
+
+🔥 Guild War push කරන අයට packages.
+📲 Order / inquiry: WhatsApp 0719270005`;
+const contact=`📲 WhatsApp: 0719270005
+
+Order එකක් හෝ price confirmation එකක් සඳහා පහළ link එක tap කරන්න:
+https://wa.me/${phone}`;
+function add(text,who='bot',html=false){const el=document.createElement('div');el.className='msg '+who;if(html)el.innerHTML=text;else el.textContent=text;document.querySelector('#chat').appendChild(el);document.querySelector('#chat').scrollTop=document.querySelector('#chat').scrollHeight}
+async function answer(q){
+ const response = await fetch('/api/chat', {
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({message:q})
+ });
+ const data = await response.json().catch(()=>({}));
+ if(!response.ok) throw new Error(data.error || 'AI request failed');
+ return data.reply || 'මචං, සමාවෙන්න. පිළිතුරක් ලැබුණේ නැහැ.';
+}
+function send(q){
+ q=q.trim(); if(!q)return;
+ add(q,'user');
+ const pending=document.createElement('div');
+ pending.className='msg bot'; pending.textContent='මචං, ටිකක් බලන්න...';
+ document.querySelector('#chat').appendChild(pending);
+ document.querySelector('#chat').scrollTop=document.querySelector('#chat').scrollHeight;
+ answer(q).then(reply=>{pending.textContent=reply;})
+ .catch(err=>{pending.textContent='මචං, AI එකට සම්බන්ධ වෙන්න බැරි වුණා. Server එක සහ API key එක check කරන්න. ('+err.message+')';})
+ .finally(()=>{document.querySelector('#chat').scrollTop=document.querySelector('#chat').scrollHeight;});
+}
+document.querySelector('#form').addEventListener('submit',e=>{e.preventDefault();const i=document.querySelector('#input');send(i.value);i.value='';i.focus()});
+document.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.q)));
+document.querySelector('#servicesToggle').addEventListener('click',()=>{const menu=document.querySelector('#quickActions');const isOpen=!menu.hidden;menu.hidden=isOpen;document.querySelector('#servicesToggle').setAttribute('aria-expanded',String(!isOpen));document.querySelector('#servicesArrow').textContent=isOpen?'＋':'−';});
+add('මචං! 👋 Maduwa Store එකට සාදරයෙන් පිළිගන්නවා.\n\nTop-up prices, Blood Strike, Guild Glory Bots සහ game accounts ගැන අහන්න. 🎮');
+</script>
+</body>
+</html>
